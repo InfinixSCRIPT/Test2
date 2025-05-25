@@ -39,7 +39,7 @@
 
     .tv-label {
       position: absolute;
-      top: 7px;
+      top: -4px; /* Daha yukarı */
       right: 15px;
       color: #23ff41;
       font-size: 18px;
@@ -50,6 +50,8 @@
       pointer-events: none;
       letter-spacing: 1px;
       user-select: none;
+      display: none; /* Başlangıçta gizli! */
+      transition: opacity 0.2s;
     }
 
     .static {
@@ -233,7 +235,7 @@
     <div class="cd" id="cd"></div>
 
     <div class="tv">
-      <div class="tv-label">Yone TV</div>
+      <div class="tv-label" id="tvLabel">Yone TV</div>
       <div class="static" id="static"></div>
       <div class="menu" id="menu">
         <button onclick="showContent('hitabe')">1. Gençliğe Hitabe</button>
@@ -256,6 +258,7 @@
     const oyun1Btn = document.getElementById('oyun1Btn');
     const oyun2Btn = document.getElementById('oyun2Btn');
     const oyun3Btn = document.getElementById('oyun3Btn');
+    const tvLabel = document.getElementById('tvLabel');
 
     // Overlay elemanları
     const overlay = document.getElementById('oyun2overlay');
@@ -277,14 +280,17 @@
         staticEffect.style.display = 'none';
         menu.style.display = 'flex';
         content.style.display = 'none';
+        tvLabel.style.display = "block";
       } else if (pluggedHDMI) {
         staticEffect.style.display = 'block';
         menu.style.display = 'none';
         content.style.display = 'none';
+        tvLabel.style.display = "none";
       } else {
         staticEffect.style.display = 'none';
         menu.style.display = 'none';
         content.style.display = 'none';
+        tvLabel.style.display = "none";
       }
     }
 
@@ -361,11 +367,14 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
       content.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div><button class="back-btn" onclick="backToMenu()">Ana Menüye Dön</button>`;
       content.style.display = 'block';
       menu.style.display = 'none';
+      tvLabel.style.display = "none";
     }
 
     function backToMenu() {
       content.style.display = 'none';
       menu.style.display = 'flex';
+      // Sadece menü görünürse Yone TV göster
+      tvLabel.style.display = "block";
     }
 
     // --- Oyun 1 Fonksiyonu ve Soru Sistemi ---
@@ -385,6 +394,7 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
       renderOyun1();
       content.style.display = 'block';
       menu.style.display = 'none';
+      tvLabel.style.display = "none";
     }
 
     function renderOyun1() {
@@ -420,6 +430,7 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
       content.innerHTML = "";
       content.style.display = 'block';
       menu.style.display = 'none';
+      tvLabel.style.display = "none";
 
       overlay.style.display = "flex";
       overlay.style.background = "rgba(20,20,20,0.96)";
@@ -478,6 +489,7 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
                 </div>
               `;
               content.style.display = "block";
+              tvLabel.style.display = "none";
             }
           }
           setTimeout(cleanup, 5000);
@@ -522,6 +534,7 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
       `;
       content.style.display = 'block';
       menu.style.display = 'none';
+      tvLabel.style.display = "none";
       document.getElementById('oyun3input').focus();
     }
 
@@ -544,8 +557,11 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
       document.getElementById('oyun3input').focus();
     }
 
+    // Yone TV sadece Gri kare (cd) konsola ve HDMI TV'ye bağlıysa çıkacak ve sadece ana menüde görünecek
     handleDrag(hdmi);
     handleDrag(cd);
+    // Sayfa açılışında TV etiketi gizli olsun
+    tvLabel.style.display = "none";
   </script>
 </body>
 </html>
