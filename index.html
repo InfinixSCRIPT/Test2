@@ -134,6 +134,7 @@
       font-size: 13px;
       text-align: center;
       padding: 15px 0 0 0;
+      transition: background 0.2s;
     }
     .oyun-soru {
       margin-bottom: 18px;
@@ -174,7 +175,7 @@
         <button onclick="showContent('hitabe')">1. Gençliğe Hitabe</button>
         <button onclick="showContent('marş')">2. İstiklal Marşı</button>
         <button id="oyun1Btn" onclick="showOyun1()">3. Oyun 1</button>
-        <button disabled>4. Oyun 2</button>
+        <button id="oyun2Btn" onclick="showOyun2()">4. Oyun 2</button>
       </div>
       <div class="content" id="content"></div>
     </div>
@@ -188,6 +189,7 @@
     const menu = document.getElementById('menu');
     const content = document.getElementById('content');
     const oyun1Btn = document.getElementById('oyun1Btn');
+    const oyun2Btn = document.getElementById('oyun2Btn');
 
     let draggingItem = null;
     let pluggedHDMI = false;
@@ -340,6 +342,96 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
     function cevaplaOyun1() {
       oyunIndex++;
       renderOyun1();
+    }
+
+    // --- Oyun 2 Fonksiyonu ---
+    function showOyun2() {
+      content.innerHTML = `
+        <div class="oyun-container" id="oyun2container">
+          <div class="oyun-soru" id="oyun2label">Yükleniyor, lütfen bekleyin...</div>
+          <div style="background:#444;height:20px;width:90%;margin:16px auto 0 auto;border-radius:10px;overflow:hidden;">
+            <div id="oyun2progress" style="background:#f00;height:100%;width:0%;transition:width 0.1s;"></div>
+          </div>
+        </div>
+      `;
+      content.style.display = 'block';
+      menu.style.display = 'none';
+      startOyun2Sequence();
+    }
+
+    function startOyun2Sequence() {
+      let progress = 0;
+      let blackFlashes = 0;
+      let colorFlashes = 0;
+      const progressBar = document.getElementById('oyun2progress');
+      const container = document.getElementById('oyun2container');
+      const label = document.getElementById('oyun2label');
+      let flashing = false;
+
+      function doBlackFlash() {
+        if (blackFlashes < 3) {
+          container.style.transition = 'background 0.2s';
+          container.style.background = 'black';
+          setTimeout(() => {
+            container.style.background = '';
+            blackFlashes++;
+            setTimeout(doBlackFlash, 250);
+          }, 150);
+        } else {
+          setTimeout(doColorFlash, 250);
+        }
+      }
+
+      function doColorFlash() {
+        const colors = ['red','green','blue'];
+        if (colorFlashes < 3) {
+          container.style.background = colors[colorFlashes % 3];
+          setTimeout(() => {
+            container.style.background = '';
+            colorFlashes++;
+            setTimeout(doColorFlash, 250);
+          }, 150);
+        } else {
+          setTimeout(showFinal, 400);
+        }
+      }
+
+      function showFinal() {
+        container.innerHTML = `
+          <div class="oyun-soru" style="font-weight:bold;font-size:19px;color:red;text-shadow:1px 1px 3px black;">
+            BELKI HACKLENDIN BEL KIDE HACKLENDIN
+          </div>
+          <div id="winerror" style="background:#fff;color:#222;border-radius:8px;padding:18px 12px;font-size:14px;box-shadow:0 2px 12px #0008;margin:24px auto;width:300px;text-align:center;">
+            <b>Windows</b><br><br>
+            Bir hata oluştu.<br>
+            <i>0x0000001E: KERNEL_MODE_EXCEPTION_NOT_HANDLED</i><br><br>
+            <button onclick="window.open('https://www.youtube.com/watch?v=iMHKeLXFbX0','_blank');window.close();">Kapat</button>
+          </div>
+        `;
+        setTimeout(() => {
+          window.open('https://www.youtube.com/watch?v=iMHKeLXFbX0', '_blank');
+          window.close();
+        }, 8000);
+      }
+
+      function updateProgress() {
+        if (progress > 100) return;
+        progressBar.style.width = progress + '%';
+        label.textContent = `Yükleniyor, lütfen bekleyin... %${progress}`;
+        if (progress === 25 && blackFlashes === 0 && !flashing) {
+          flashing = true;
+          doBlackFlash();
+        }
+
+        if (progress < 100) {
+          progress += 1;
+          setTimeout(updateProgress, 50);
+        } else if (!flashing) {
+          doBlackFlash();
+        }
+      }
+
+      updateProgress();
     }
 
     handleDrag(hdmi);
