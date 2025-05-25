@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>YoneSimulator</title>
   <style>
-    /* ... (mevcut stilleriniz burada olacak) ... */
     body {
       background-color: #F5EF3D;
       margin: 0;
@@ -36,6 +35,21 @@
       justify-content: center;
       align-items: center;
       padding: 5px;
+    }
+
+    .tv-label {
+      position: absolute;
+      top: 7px;
+      right: 15px;
+      color: #23ff41;
+      font-size: 18px;
+      font-weight: bold;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      text-shadow: 0 0 2px #000, 0 0 7px #0e5e17;
+      z-index: 2;
+      pointer-events: none;
+      letter-spacing: 1px;
+      user-select: none;
     }
 
     .static {
@@ -128,7 +142,6 @@
       padding: 2px 5px;
     }
 
-    /* Evet-Hayır Oyun Stili */
     .oyun-container {
       color: white;
       font-size: 13px;
@@ -220,12 +233,14 @@
     <div class="cd" id="cd"></div>
 
     <div class="tv">
+      <div class="tv-label">Yone TV</div>
       <div class="static" id="static"></div>
       <div class="menu" id="menu">
         <button onclick="showContent('hitabe')">1. Gençliğe Hitabe</button>
         <button onclick="showContent('marş')">2. İstiklal Marşı</button>
         <button id="oyun1Btn" onclick="showOyun1()">3. Oyun 1</button>
         <button id="oyun2Btn" onclick="showOyun2()">4. Oyun 2</button>
+        <button id="oyun3Btn" onclick="showOyun3()">5. Oyun 3</button>
       </div>
       <div class="content" id="content"></div>
     </div>
@@ -240,6 +255,7 @@
     const content = document.getElementById('content');
     const oyun1Btn = document.getElementById('oyun1Btn');
     const oyun2Btn = document.getElementById('oyun2Btn');
+    const oyun3Btn = document.getElementById('oyun3Btn');
 
     // Overlay elemanları
     const overlay = document.getElementById('oyun2overlay');
@@ -486,6 +502,46 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
         }
       }
       updateProgress();
+    }
+
+    // --- Oyun 3: Basit bir sayı tahmin oyunu örneği ---
+    let oyun3Number = 0;
+    let oyun3Tries = 0;
+
+    function showOyun3() {
+      oyun3Number = Math.floor(Math.random() * 20) + 1;
+      oyun3Tries = 0;
+      content.innerHTML = `
+        <div class="oyun-container" id="oyun3container">
+          <div class="oyun-soru" id="oyun3soru">1 ile 20 arasında bir sayı tuttum, tahmin et!</div>
+          <input type="number" id="oyun3input" min="1" max="20" style="padding:3px 6px;font-size:13px;width:60px;text-align:center;margin-bottom:10px;">
+          <button class="oyun-btn" onclick="oyun3Tahmin()">Tahmin Et</button>
+          <div id="oyun3cevap" style="margin-top:10px;font-size:13px;color:#ffe17a;"></div>
+          <button class="back-btn" onclick="backToMenu()" style="margin-top:12px;">Ana Menüye Dön</button>
+        </div>
+      `;
+      content.style.display = 'block';
+      menu.style.display = 'none';
+      document.getElementById('oyun3input').focus();
+    }
+
+    window.oyun3Tahmin = function() {
+      const val = Number(document.getElementById('oyun3input').value);
+      const cevap = document.getElementById('oyun3cevap');
+      oyun3Tries++;
+      if (isNaN(val) || val < 1 || val > 20) {
+        cevap.textContent = "Lütfen 1 ile 20 arasında bir sayı gir!";
+      } else if (val === oyun3Number) {
+        cevap.style.color = "#2fdc6f";
+        cevap.textContent = `Tebrikler! ${oyun3Tries}. denemede doğru bildin!`;
+      } else if (val < oyun3Number) {
+        cevap.style.color = "#ffe17a";
+        cevap.textContent = "Daha büyük bir sayı gir!";
+      } else {
+        cevap.style.color = "#ffe17a";
+        cevap.textContent = "Daha küçük bir sayı gir!";
+      }
+      document.getElementById('oyun3input').focus();
     }
 
     handleDrag(hdmi);
