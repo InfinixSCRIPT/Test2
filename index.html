@@ -15,6 +15,37 @@
       font-family: sans-serif;
     }
 
+    /* En üste ortalanmış buton için container */
+    .kopalim-btn-container {
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      position: fixed;
+      top: 32px;
+      left: 0;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .kopalim-btn {
+      pointer-events: auto;
+      background: #ff69b4;
+      color: #fff;
+      font-weight: bold;
+      font-size: 20px;
+      padding: 16px 40px;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 3px 14px #0003;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      outline: none;
+      letter-spacing: 1px;
+    }
+    .kopalim-btn:active {
+      background: #d03e87;
+      transform: scale(0.97);
+    }
+
     .container {
       position: relative;
       width: 800px;
@@ -220,6 +251,11 @@
   </style>
 </head>
 <body>
+  <!-- KOPALIM BUTONU -->
+  <div class="kopalim-btn-container">
+    <button class="kopalim-btn" id="kopalimBtn">Azcık kopalım</button>
+  </div>
+
   <div id="oyun2overlay">
     <div class="oyun2label" id="oyun2overlayLabel">Yükleniyor, lütfen bekleyin...</div>
     <div class="oyun2progressbar-wrap">
@@ -249,6 +285,45 @@
   </div>
 
   <script>
+    // === KOPALIM BUTONU İÇİN EKLENEN KOD BAŞLANGIÇ ===
+    const kopalimBtn = document.getElementById('kopalimBtn');
+    let kopalimAktif = false;
+    let renkTimer = null;
+    const normalRenk = "#F5EF3D";
+    const renkler = [
+      "#ff1744", // kırmızı
+      "#ff9100", // turuncu
+      "#fff700", // sarı
+      "#00e676", // yeşil
+      "#2979ff", // mavi
+      "#d500f9"  // mor
+    ];
+    let renkIndex = 0;
+
+    function baslatKopalim() {
+      renkIndex = 0;
+      renkTimer = setInterval(() => {
+        document.body.style.backgroundColor = renkler[renkIndex];
+        renkIndex = (renkIndex + 1) % renkler.length;
+      }, 2000);
+    }
+    function durdurKopalim() {
+      clearInterval(renkTimer);
+      renkTimer = null;
+      document.body.style.backgroundColor = normalRenk;
+    }
+
+    kopalimBtn.addEventListener('click', function() {
+      kopalimAktif = !kopalimAktif;
+      if (kopalimAktif) {
+        baslatKopalim();
+      } else {
+        durdurKopalim();
+      }
+    });
+    // === KOPALIM BUTONU İÇİN EKLENEN KOD BİTİŞ ===
+
+    // --- Orijinal script'in devamı ---
     const hdmi = document.getElementById('hdmi');
     const cd = document.getElementById('cd');
     const staticEffect = document.getElementById('static');
@@ -469,7 +544,7 @@ Hakkıdır, Hakk’a tapan, milletimin istiklâl!`;
         overlay.style.background = "black";
         setTimeout(() => {
           // Windows hatası
-          overlayLabel.innerHTML = `<div style="color:#222;font-size:21px;background:#fff;border-radius:9px;padding:16px 18px 20px 18px;box-shadow:0 2px 20px #000c;max-width:380px;margin:auto;line-height:1.6;letter-spacing:1px;">
+          overlayLabel.innerHTML = `<div style="color:#222;font-size:21px;background:#fff;border-radius:9px;padding:16px 18px 20px 18px;box-shadow:0 2px 20px #000c;max-width:380px;margin:auto;line-hei[...]
             <b>Windows</b><br><br>
             Bir hata oluştu.<br>
             <i>0x0000001E: KERNEL_MODE_EXCEPTION_NOT_HANDLED</i><br><br>
